@@ -18,10 +18,6 @@
 include_recipe "php"
 case node[:platform]
 when "debian","ubuntu"
-  execute "apt-get update" do
-    action :nothing
-  end
-
   %w{python-software-properties pkg-config}.each do |pkg|
     package pkg
   end
