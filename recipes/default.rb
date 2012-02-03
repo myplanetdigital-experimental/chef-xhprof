@@ -18,20 +18,27 @@
 include_recipe "php"
 case node[:platform]
 when "debian","ubuntu"
-  execute "apt-get update" do
-    action :nothing
-  end
+  if node['lsb']['codename'] === 'hardy'
+    # only pecl package on hardy
+    php_pear "xhprof" do
+      preferred_state "beta"
+    end
+  else
+    execute "apt-get update" do
+      action :nothing
+    end
 
-  %w{python-software-properties pkg-config}.each do |pkg|
-    package pkg
-  end
+    %w{python-software-properties pkg-config}.each do |pkg|
+      package pkg
+    end
 
-  execute "add-apt-repository ppa:brianmercer/php5-xhprof" do
-    not_if { File.exists?("/etc/apt/sources.list.d/xhprof.list") }
-    notifies :run, resources("execute[apt-get update]"), :immediately
-  end
+    execute "add-apt-repository ppa:brianmercer/php5-xhprof" do
+      not_if { File.exists?("/etc/apt/sources.list.d/xhprof.list") }
+      notifies :run, resources("execute[apt-get update]"), :immediately
+    end
 
-  package "php5-xhprof"
+    package "php5-xhprof"
+  end
 
 when "mac_os_x"
   package "xhprof"
