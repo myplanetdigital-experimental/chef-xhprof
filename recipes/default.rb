@@ -22,9 +22,12 @@ when "debian","ubuntu"
     package pkg
   end
 
-  execute "add-apt-repository ppa:brianmercer/php5-xhprof" do
-    not_if { File.exists?("/etc/apt/sources.list.d/xhprof.list") }
-    notifies :run, resources("execute[apt-get update]"), :immediately
+  apt_repository "xhprof" do
+    uri "http://ppa.launchpad.net/brianmercer/php5-xhprof/ubuntu"
+    distribution node['lsb']['codename']
+    components ["main"]
+    keyserver "keyserver.ubuntu.com"
+    key "8D0DC64F"
   end
 
   package "php5-xhprof"
